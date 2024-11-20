@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for quartet1
+name: CI/CD Pipeline for quartet
 
 on:
   push:
@@ -84,26 +84,26 @@ jobs:
           # Connect to EC2 and perform deployment
           ssh -o StrictHostKeyChecking=no ubuntu@98.84.118.54 << EOF
             # Stop and remove any running container on port 8080
-            CONTAINER_ID=\$(docker ps -q -f "ancestor=961341543490.dkr.ecr.us-east-1.amazonaws.com/quartet1:latest")
-            if [ ! -z "\$CONTAINER_ID" ]; then
-              docker stop \$CONTAINER_ID
-              docker rm \$CONTAINER_ID
+            CONTAINER_ID=$(docker ps -q -f "ancestor=961341543490.dkr.ecr.us-east-1.amazonaws.com/quartet:latest")
+            if [ ! -z "$CONTAINER_ID" ]; then
+              docker stop $CONTAINER_ID
+              docker rm $CONTAINER_ID
             fi
 
             # Optionally remove old images if needed
-            IMAGE_ID=\$(docker images -q 961341543490.dkr.ecr.us-east-1.amazonaws.com/quartet1:latest)
-            if [ ! -z "\$IMAGE_ID" ]; then
-              docker rmi \$IMAGE_ID
+            IMAGE_ID=$(docker images -q 961341543490.dkr.ecr.us-east-1.amazonaws.com/quartet:latest)
+            if [ ! -z "$IMAGE_ID" ]; then
+              docker rmi $IMAGE_ID
             fi
 
             # Login to AWS ECR
             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 961341543490.dkr.ecr.us-east-1.amazonaws.com
             
             # Pull the Docker image from ECR
-            docker pull 961341543490.dkr.ecr.us-east-1.amazonaws.com/quartet1:latest
+            docker pull 961341543490.dkr.ecr.us-east-1.amazonaws.com/quartet:latest
 
             # Run the Docker container on EC2
-            docker run -d -p 8080:8080 961341543490.dkr.ecr.us-east-1.amazonaws.com/quartet1:latest
+            docker run -d -p 8080:8080 961341543490.dkr.ecr.us-east-1.amazonaws.com/quartet:latest
           EOF
 
       # Optional: Check the running container logs (for debugging purposes)
